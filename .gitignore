@@ -1,2 +1,16 @@
 .vercel
 .env*.local
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.idea/
+.metadata
+*.iml
+build/
+pubspec.lock
+
+# Android
+android/.gradle/
+android/app/build/
