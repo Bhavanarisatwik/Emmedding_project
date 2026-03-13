@@ -33,6 +33,9 @@ _SESSION_MAX_AGE = timedelta(hours=8)
 @app.before_request
 def require_login():
     public_paths = {"/login", "/favicon.ico"}
+    # Add API paths as public (no auth required)
+    if request.path.startswith("/api/"):
+        return
     if request.path in public_paths or request.path.startswith("/static"):
         return
     if not session.get("authenticated"):
