@@ -4,7 +4,17 @@ import os
 import secrets as _secrets
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from flask import Flask, request, jsonify, render_template, send_file, abort, session, redirect, url_for
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    render_template,
+    send_file,
+    abort,
+    session,
+    redirect,
+    url_for,
+)
 from flask_cors import CORS
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
@@ -59,6 +69,8 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -80,6 +92,7 @@ def _make_thumbnail_b64(path: Path, max_px: int = 400) -> str | None:
     """
     try:
         from PIL import Image as _PILImage
+
         with _PILImage.open(path) as img:
             img = img.convert("RGB")
             img.thumbnail((max_px, max_px), _PILImage.LANCZOS)
@@ -156,11 +169,13 @@ def chat():
                 fname = meta.get("filename", r["id"])
                 user_tag = meta.get("user_tag", "")
                 tag_note = f" (tagged: {user_tag})" if user_tag else ""
-                context_parts.append(
-                    f"[{i}] [visual:{fname}{tag_note}]"
-                )
+                context_parts.append(f"[{i}] [visual:{fname}{tag_note}]")
 
-        context = "\n\n".join(context_parts) if context_parts else "No relevant content found."
+        context = (
+            "\n\n".join(context_parts)
+            if context_parts
+            else "No relevant content found."
+        )
         model = data.get("model") or os.getenv("CHAT_MODEL", "kimi-k2.5")
         system_prompt = (
             "You are a personal AI assistant with access to the user's documents, images, and files. "
@@ -183,18 +198,22 @@ def chat():
                     rel = meta.get("rel_path") or meta.get("path", "")
                     rel = Path(rel).as_posix()
                     if "data/" in rel:
-                        rel = rel[rel.index("data/") + 5:]
+                        rel = rel[rel.index("data/") + 5 :]
                     src["url"] = f"/media/{rel}"
             sources.append(src)
         return jsonify({"answer": answer, "sources": sources})
 
     except Exception as e:
-        import traceback; traceback.print_exc()
+        import traceback
+
+        traceback.print_exc()
         msg = str(e)
         if "429" in msg:
-            return jsonify({
-                "error": "Rate limit reached for this free model. Switch to another model in the dropdown and try again."
-            }), 429
+            return jsonify(
+                {
+                    "error": "Rate limit reached for this free model. Switch to another model in the dropdown and try again."
+                }
+            ), 429
         return jsonify({"error": msg}), 500
 
 
@@ -223,13 +242,25 @@ def ingest():
     try:
         if "text" in data:
             from src.pipeline import ingest_text
+
             id = data.get("id") or "text_" + str(abs(hash(data["text"])))[:8]
             ingest_text(data["text"], id)
             return jsonify({"status": "ok", "id": id})
 
         if "path" in data:
-            from src.pipeline import ingest_image, ingest_video, ingest_text, _IMAGE_EXTS, _VIDEO_EXTS, _PDF_EXT, _DOCX_EXT, _extract_pdf, _extract_docx
+            from src.pipeline import (
+                ingest_image,
+                ingest_video,
+                ingest_text,
+                _IMAGE_EXTS,
+                _VIDEO_EXTS,
+                _PDF_EXT,
+                _DOCX_EXT,
+                _extract_pdf,
+                _extract_docx,
+            )
             from pathlib import Path as _P
+
             file = _P(data["path"])
             ext = file.suffix.lower()
             id = file.stem + "_" + str(abs(hash(str(file))))[:8]
@@ -286,13 +317,25 @@ def upload():
 
     try:
         from src.pipeline import (
-            ingest_image, ingest_video, ingest_text,
-            _IMAGE_EXTS, _VIDEO_EXTS, _PDF_EXT, _DOCX_EXT,
-            _extract_pdf, _extract_docx,
+            ingest_image,
+            ingest_video,
+            ingest_text,
+            _IMAGE_EXTS,
+            _VIDEO_EXTS,
+            _PDF_EXT,
+            _DOCX_EXT,
+            _extract_pdf,
+            _extract_docx,
         )
+
         rel_path = f"{subfolder}/{filename}"
         file_id = Path(filename).stem + "_" + str(abs(hash(rel_path)))[:8]
-        meta = {"filename": filename, "path": rel_path, "rel_path": rel_path, "user_tag": tag}
+        meta = {
+            "filename": filename,
+            "path": rel_path,
+            "rel_path": rel_path,
+            "user_tag": tag,
+        }
 
         if ext in _IMAGE_EXTS:
             # Store thumbnail as data URL so it's serveable on Vercel (no file needed at query time)
@@ -303,14 +346,24 @@ def upload():
             # Also store a text embedding of the tag so text queries can find this image
             if tag:
                 from src import embedder as _emb, pinecone_client as _pc
+
                 tag_vec = _emb.embed_text(tag, task_type="RETRIEVAL_DOCUMENT")
-                _pc.upsert(file_id + "_tag", tag_vec, {**meta, "type": "image", "tag_vector": True})
+                _pc.upsert(
+                    file_id + "_tag",
+                    tag_vec,
+                    {**meta, "type": "image", "tag_vector": True},
+                )
         elif ext in _VIDEO_EXTS:
             ingest_video(str(dest_path), file_id, meta)
             if tag:
                 from src import embedder as _emb, pinecone_client as _pc
+
                 tag_vec = _emb.embed_text(tag, task_type="RETRIEVAL_DOCUMENT")
-                _pc.upsert(file_id + "_tag", tag_vec, {**meta, "type": "video", "tag_vector": True})
+                _pc.upsert(
+                    file_id + "_tag",
+                    tag_vec,
+                    {**meta, "type": "video", "tag_vector": True},
+                )
         elif ext == _PDF_EXT:
             content = _extract_pdf(dest_path)
             ingest_text(content, file_id, {**meta, "source": "pdf"})
@@ -320,10 +373,18 @@ def upload():
         else:
             ingest_text(dest_path.read_text(errors="ignore"), file_id, meta)
 
-        return jsonify({"status": "ok", "id": file_id, "filename": filename, "subfolder": subfolder})
+        return jsonify(
+            {
+                "status": "ok",
+                "id": file_id,
+                "filename": filename,
+                "subfolder": subfolder,
+            }
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
-    app.run(debug=False, port=5000)
+    port = int(os.getenv("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
