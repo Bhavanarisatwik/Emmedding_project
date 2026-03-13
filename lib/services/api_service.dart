@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 import '../models/message.dart';
 
 class ApiService {
-  // Change this to your Vercel URL or local IP
-  static const String baseUrl = 'http://localhost:5000';
-  // For production, use your Vercel URL:
-  // static const String baseUrl = 'https://your-app.vercel.app';
+  // ⚠️ UPDATE THIS URL when deploying to production
+  // For local testing: 'http://localhost:5000'
+  // For Vercel deployment: 'https://your-vercel-app.vercel.app'
+  static const String baseUrl = 'https://personal-knowledge-base-mj26ilu05.vercel.app';
   
   static const String chatEndpoint = '/api/chat';
   static const String uploadEndpoint = '/api/upload';
