@@ -14,3 +14,6 @@ pubspec.lock
 # Android
 android/.gradle/
 android/app/build/
+
+.vercel
+.env*.local

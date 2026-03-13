@@ -10,8 +10,10 @@ services:
         sync: false
       - key: PINECONE_API_KEY
         sync: false
-      - key: OPENROUTER_API_KEY
+      - key: OPENCODE_API_KEY
         sync: false
-      - key: OPENROUTER_API_BASE
-        sync: false
+      - key: PINECONE_INDEX_NAME
+        value: multimodal-index
+      - key: PINECONE_REGION
+        value: us-east-1
     autoDeploy: true
