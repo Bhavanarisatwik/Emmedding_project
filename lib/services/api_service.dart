@@ -8,15 +8,9 @@ class ApiService {
   // =====================================================
   // 🔧 CONFIGURATION - Change URL based on your setup:
   // =====================================================
-  // 
-  // LOCAL TESTING (when running Flask on your computer):
-  // Use your computer's local IP (e.g., http://192.168.1.x:5000)
-  // Make sure phone and computer are on same WiFi
   //
-  // PRODUCTION (Vercel deployment):
-  // Use your Vercel URL after disabling authentication
-  //
-  static const String baseUrl = 'http://100.87.125.116:5000';
+  // RENDER DEPLOYMENT (recommended):
+  static const String baseUrl = 'https://emmedding-project.onrender.com';
   // =====================================================
   
   static const String chatEndpoint = '/api/chat';
