@@ -1,0 +1,291 @@
+/* ── Animations ─────────────────────────────────────────────────────────── */
+@keyframes msg-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-enter {
+  from { opacity: 0; transform: translateX(110%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes thinking-pulse {
+  0%, 80%, 100% { transform: scale(0.55); opacity: 0.35; }
+  40%           { transform: scale(1);    opacity: 1; }
+}
+@keyframes modal-enter {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(99,102,241,0.12); }
+  50%       { box-shadow: 0 0 32px rgba(99,102,241,0.26); }
+}
+
+.msg-enter         { animation: msg-enter 0.3s cubic-bezier(0.16,1,0.3,1) forwards; }
+.toast-enter       { animation: toast-enter 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
+.modal-enter       { animation: modal-enter 0.28s cubic-bezier(0.16,1,0.3,1) forwards; }
+.animate-fade-down { animation: fade-down 0.2s ease forwards; }
+.animate-spin      { animation: spin 0.75s linear infinite; }
+.logo-glow         { animation: glow-pulse 3s ease-in-out infinite; }
+
+.thinking-dot { display: inline-block; animation: thinking-pulse 1.4s ease-in-out infinite; }
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: #27272a transparent; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+.sources-row::-webkit-scrollbar { display: none; }
+.sources-row { scrollbar-width: none; }
+
+/* ── Sidebar transition ──────────────────────────────────────────────────── */
+.sidebar-transition { transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }
+
+/* ── Upload zone ────────────────────────────────────────────────────────── */
+.upload-zone { user-select: none; }
+
+/* ── Select custom ──────────────────────────────────────────────────────── */
+select option { background: #18181b; color: #fafafa; }
+textarea { overflow: hidden; overflow-y: auto; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROSE / MARKDOWN  — production-grade, ChatGPT/Claude quality
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.prose-custom {
+  color: #e2e2e8;
+  font-size: 15px;
+  line-height: 1.75;
+  word-break: break-word;
+}
+
+/* Paragraphs */
+.prose-custom p {
+  margin: 0 0 1em;
+}
+.prose-custom p:last-child { margin-bottom: 0; }
+
+/* Headings */
+.prose-custom h1,
+.prose-custom h2,
+.prose-custom h3,
+.prose-custom h4 {
+  color: #fafafa;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 1.4em 0 0.5em;
+}
+.prose-custom h1 { font-size: 1.35em; border-bottom: 1px solid #27272a; padding-bottom: 0.3em; }
+.prose-custom h2 { font-size: 1.18em; }
+.prose-custom h3 { font-size: 1.05em; }
+.prose-custom h4 { font-size: 1em; color: #a1a1aa; }
+.prose-custom h1:first-child,
+.prose-custom h2:first-child,
+.prose-custom h3:first-child { margin-top: 0; }
+
+/* Bold / Italic */
+.prose-custom strong { color: #fafafa; font-weight: 600; }
+.prose-custom em { color: #c4c4d0; font-style: italic; }
+.prose-custom s { color: #71717a; }
+
+/* Links */
+.prose-custom a {
+  color: #818cf8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(129,140,248,0.4);
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.prose-custom a:hover {
+  color: #a5b4fc;
+  text-decoration-color: rgba(165,180,252,0.7);
+}
+
+/* Lists */
+.prose-custom ul,
+.prose-custom ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0 1em;
+}
+.prose-custom li { margin-bottom: 0.35em; line-height: 1.65; }
+.prose-custom li > p { margin: 0; }
+.prose-custom ul { list-style: none; }
+.prose-custom ul > li { position: relative; padding-left: 0.3em; }
+.prose-custom ul > li::before {
+  content: '';
+  position: absolute;
+  left: -1em;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6366f1;
+  opacity: 0.8;
+}
+.prose-custom ol { list-style: decimal; }
+.prose-custom ol > li::marker { color: #6366f1; font-weight: 600; }
+
+/* Nested lists */
+.prose-custom ul ul,
+.prose-custom ol ol,
+.prose-custom ul ol,
+.prose-custom ol ul { margin: 0.25em 0 0.25em; }
+
+/* Blockquote */
+.prose-custom blockquote,
+.prose-custom .nkb-blockquote {
+  border-left: 3px solid #6366f1;
+  margin: 1em 0;
+  padding: 0.6em 1em;
+  background: rgba(99,102,241,0.06);
+  border-radius: 0 8px 8px 0;
+  color: #a1a1aa;
+  font-style: italic;
+}
+
+/* Horizontal rule */
+.prose-custom hr {
+  border: none;
+  border-top: 1px solid #27272a;
+  margin: 1.5em 0;
+}
+
+/* Inline code */
+.prose-custom code {
+  font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 0.875em;
+  background: rgba(99,102,241,0.12);
+  border: 1px solid rgba(99,102,241,0.2);
+  border-radius: 5px;
+  padding: 0.15em 0.4em;
+  color: #a5b4fc;
+}
+
+/* ── Code blocks ────────────────────────────────────────────────────────── */
+.nkb-code-block {
+  margin: 1em 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #27272a;
+  background: #0d0d0f;
+}
+.nkb-code-block:last-child { margin-bottom: 0; }
+
+.nkb-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #141416;
+  border-bottom: 1px solid #1e1e24;
+}
+
+.nkb-code-lang {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 11px;
+  color: #52525b;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+.nkb-copy-btn {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #52525b;
+  background: none;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  padding: 2px 10px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  line-height: 1.6;
+}
+.nkb-copy-btn:hover {
+  color: #a1a1aa;
+  border-color: #3f3f46;
+  background: #18181b;
+}
+.nkb-copy-btn.copied {
+  color: #34d399;
+  border-color: rgba(52,211,153,0.3);
+}
+
+.nkb-code-block pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  background: transparent;
+}
+.nkb-code-block pre code {
+  font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #d4d4d8;
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* Existing prose pre fallback (no wrapper) */
+.prose-custom pre {
+  background: #0d0d0f;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+.prose-custom pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #d4d4d8;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+.nkb-table-wrap {
+  overflow-x: auto;
+  margin: 1em 0;
+  border-radius: 10px;
+  border: 1px solid #27272a;
+}
+.prose-custom table,
+.nkb-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+.prose-custom th,
+.nkb-table-wrap th {
+  background: #141416;
+  color: #e4e4e7;
+  font-weight: 600;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #27272a;
+  white-space: nowrap;
+}
+.prose-custom td,
+.nkb-table-wrap td {
+  padding: 9px 14px;
+  color: #a1a1aa;
+  border-bottom: 1px solid #1c1c1f;
+  vertical-align: top;
+}
+.nkb-table-wrap tr:last-child td { border-bottom: none; }
+.nkb-table-wrap tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ── Source chip ────────────────────────────────────────────────────────── */
+.source-chip { white-space: nowrap; }

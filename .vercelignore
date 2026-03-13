@@ -1,0 +1,7 @@
+data/
+.env
+app.log
+.claude/
+__pycache__/
+*.pyc
+main.py
