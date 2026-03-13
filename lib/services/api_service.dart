@@ -5,10 +5,19 @@ import 'package:http/http.dart' as http;
 import '../models/message.dart';
 
 class ApiService {
-  // ⚠️ UPDATE THIS URL when deploying to production
-  // For local testing: 'http://localhost:5000'
-  // For Vercel deployment: 'https://your-vercel-app.vercel.app'
-  static const String baseUrl = 'https://personal-knowledge-base-mj26ilu05.vercel.app';
+  // =====================================================
+  // 🔧 CONFIGURATION - Change URL based on your setup:
+  // =====================================================
+  // 
+  // LOCAL TESTING (when running Flask on your computer):
+  // Use your computer's local IP (e.g., http://192.168.1.x:5000)
+  // Make sure phone and computer are on same WiFi
+  //
+  // PRODUCTION (Vercel deployment):
+  // Use your Vercel URL after disabling authentication
+  //
+  static const String baseUrl = 'http://100.87.125.116:5000';
+  // =====================================================
   
   static const String chatEndpoint = '/api/chat';
   static const String uploadEndpoint = '/api/upload';
