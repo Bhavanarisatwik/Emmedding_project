@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Deep violet/purple dark theme
-  static const Color primaryDark = Color(0xFF090910);
-  static const Color surface = Color(0xFF12121C);
-  static const Color surfaceLight = Color(0xFF1C1C2A);
-  static const Color textPrimary = Color(0xFFF0F0FF);
-  static const Color textSecondary = Color(0xFF8B8BA8);
-  static const Color accentBlue = Color(0xFFA78BFA); // violet-400
-  static const Color accentBlueDark = Color(0xFF7C3AED); // violet-600
-  static const Color accentGlow = Color(0xFF7C3AED);
-  static const Color userBubble = Color(0xFF6D28D9); // deep violet
-  static const Color aiBubble = Color(0xFF12121C); // same as surface
-  static const Color divider = Color(0xFF2A2A3E);
-  static const Color success = Color(0xFF34D399); // emerald
-  static const Color error = Color(0xFFF87171); // red-400
+  // Google Gemini dark theme
+  static const Color primaryDark = Color(0xFF131314);   // deep charcoal
+  static const Color surface = Color(0xFF1C1E21);        // slightly elevated
+  static const Color surfaceLight = Color(0xFF28292C);   // modals/sheets
+  static const Color textPrimary = Color(0xFFE8EAED);    // off-white
+  static const Color textSecondary = Color(0xFF9AA0A6);  // muted gray
+  static const Color accentBlue = Color(0xFFE8EAED);     // off-white
+  static const Color accentBlueDark = Color(0xFFBDC1C6); // cool light gray
+  static const Color accentGlow = Color(0xFFE8EAED);
+  static const Color userBubble = Color(0xFF303134);     // dark gray pill
+  static const Color aiBubble = Color(0x00000000);       // fully transparent (borderless)
+  static const Color divider = Color(0xFF3C4043);
+  static const Color success = Color(0xFF34D399);
+  static const Color error = Color(0xFFF87171);
 
   static ThemeData get darkTheme {
     return ThemeData(
@@ -22,8 +22,8 @@ class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: primaryDark,
       primaryColor: accentBlue,
-      highlightColor: Color(0x1AA78BFA),
-      splashColor: Color(0x0FA78BFA),
+      highlightColor: Color(0x14E8EAED),
+      splashColor: Color(0x0AE8EAED),
       colorScheme: const ColorScheme.dark(
         primary: accentBlue,
         secondary: accentBlueDark,
@@ -60,29 +60,27 @@ class AppTheme {
         filled: true,
         fillColor: surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(50),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(50),
           borderSide: const BorderSide(color: divider, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: accentBlue, width: 2),
+          borderRadius: BorderRadius.circular(50),
+          borderSide: const BorderSide(color: accentBlue, width: 1.5),
         ),
         hintStyle: const TextStyle(color: textSecondary),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: accentBlue,
-          foregroundColor: Colors.white,
+          foregroundColor: primaryDark,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          shape: const StadiumBorder(),
         ),
       ),
       textButtonTheme: TextButtonThemeData(

@@ -425,14 +425,14 @@ class _UploadScreenState extends State<UploadScreen> {
                         : const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.cloud_upload_outlined, color: Colors.white),
+                              Icon(Icons.cloud_upload_outlined, color: AppTheme.primaryDark),
                               SizedBox(width: 8),
                               Text(
                                 'Upload & Index',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  color: AppTheme.primaryDark,
                                 ),
                               ),
                             ],

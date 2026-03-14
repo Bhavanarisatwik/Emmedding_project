@@ -2,12 +2,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/chat_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/typing_indicator.dart';
 import '../models/message.dart';
+import 'upload_screen.dart';
+import 'settings_screen.dart';
+import 'login_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -62,68 +66,252 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
+  Future<void> _signOut() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('is_logged_in', false);
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    }
+  }
+
+  Widget _buildDrawer() {
+    return Drawer(
+      backgroundColor: AppTheme.surfaceLight,
+      width: MediaQuery.of(context).size.width * 0.82,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppTheme.accentBlue, AppTheme.accentBlueDark],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(9),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.accentGlow.withOpacity(0.35),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
+            // ── Header ────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 28, 20, 16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppTheme.accentBlue, AppTheme.accentBlueDark],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    child: const Icon(
+                      Icons.auto_awesome,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'NeuralKB',
+                        style: TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      Text(
+                        'AI Knowledge Base',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary.withOpacity(0.65),
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              child: const Icon(Icons.auto_awesome, size: 17, color: Colors.white),
             ),
-            const SizedBox(width: 10),
-            const Text(
-              'NeuralKB',
-              style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.3),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(color: AppTheme.divider.withOpacity(0.8), height: 1),
             ),
+            const SizedBox(height: 8),
+
+            // ── New Chat ──────────────────────────────────
+            _drawerTile(
+              icon: Icons.add_circle_outline_rounded,
+              label: 'New Chat',
+              onTap: () {
+                context.read<ChatProvider>().clearMessages();
+                Navigator.pop(context);
+              },
+            ),
+
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, bottom: 6),
+              child: Text(
+                'TOOLS',
+                style: TextStyle(
+                  color: AppTheme.textSecondary.withOpacity(0.45),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.3,
+                ),
+              ),
+            ),
+
+            // ── Upload ────────────────────────────────────
+            _drawerTile(
+              icon: Icons.cloud_upload_outlined,
+              label: 'Upload Files',
+              subtitle: 'Add to knowledge base',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const UploadScreen()),
+                );
+              },
+            ),
+
+            // ── Settings ──────────────────────────────────
+            _drawerTile(
+              icon: Icons.settings_outlined,
+              label: 'Settings',
+              subtitle: 'Model & preferences',
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                );
+              },
+            ),
+
+            const Spacer(),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Divider(color: AppTheme.divider.withOpacity(0.7), height: 1),
+            ),
+            const SizedBox(height: 4),
+
+            // ── Sign Out ──────────────────────────────────
+            _drawerTile(
+              icon: Icons.logout_rounded,
+              label: 'Sign Out',
+              color: AppTheme.error,
+              onTap: () {
+                Navigator.pop(context);
+                _signOut();
+              },
+            ),
+            const SizedBox(height: 16),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _drawerTile({
+    required IconData icon,
+    required String label,
+    String? subtitle,
+    Color? color,
+    required VoidCallback onTap,
+  }) {
+    final labelColor = color ?? AppTheme.textPrimary;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        splashColor: (color ?? AppTheme.accentBlue).withOpacity(0.08),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+          child: Row(
+            children: [
+              Icon(icon, color: color ?? AppTheme.textSecondary, size: 22),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        color: labelColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (subtitle != null)
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: AppTheme.textSecondary.withOpacity(0.55),
+                          fontSize: 12,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.primaryDark,
+      appBar: AppBar(
+        backgroundColor: AppTheme.primaryDark,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        leading: Builder(
+          builder: (ctx) => IconButton(
+            icon: const Icon(
+              Icons.menu_rounded,
+              color: AppTheme.textSecondary,
+              size: 24,
+            ),
+            onPressed: () => Scaffold.of(ctx).openDrawer(),
+          ),
+        ),
+        title: const Text(
+          'NeuralKB',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 17,
+            color: AppTheme.textPrimary,
+            letterSpacing: 0.2,
+          ),
+        ),
+        centerTitle: true,
         actions: [
           Consumer<ChatProvider>(
-            builder: (context, chat, _) => PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                if (value == 'clear') {
-                  chat.clearMessages();
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'clear',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete_outline, size: 20),
-                      SizedBox(width: 8),
-                      Text('Clear chat'),
-                    ],
-                  ),
-                ),
-              ],
+            builder: (context, chat, _) => IconButton(
+              icon: const Icon(
+                Icons.edit_outlined,
+                color: AppTheme.textSecondary,
+                size: 22,
+              ),
+              onPressed: () => chat.clearMessages(),
+              tooltip: 'New chat',
             ),
           ),
         ],
       ),
+      drawer: _buildDrawer(),
       body: Column(
         children: [
-          // Messages list
+          // ── Messages ──────────────────────────────────
           Expanded(
             child: Consumer<ChatProvider>(
               builder: (context, chat, _) {
@@ -144,7 +332,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: TypingIndicator(),
                       );
                     }
-
                     final message = chat.messages[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -159,7 +346,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
 
-          // Error banner
+          // ── Error banner ──────────────────────────────
           Consumer<ChatProvider>(
             builder: (context, chat, _) {
               if (chat.error == null) return const SizedBox.shrink();
@@ -195,7 +382,7 @@ class _ChatScreenState extends State<ChatScreen> {
             },
           ),
 
-          // Input bar
+          // ── Input bar ─────────────────────────────────
           _buildInputBar(),
         ],
       ),
@@ -214,36 +401,25 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          const SizedBox(height: 64),
+          const SizedBox(height: 56),
           Container(
-            width: 76,
-            height: 76,
+            width: 72,
+            height: 72,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [AppTheme.accentBlue, AppTheme.accentBlueDark],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.accentGlow.withOpacity(0.4),
-                  blurRadius: 24,
-                  offset: const Offset(0, 6),
-                ),
-              ],
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: const Icon(
-              Icons.auto_awesome,
-              size: 36,
-              color: Colors.white,
-            ),
+            child: const Icon(Icons.auto_awesome, size: 34, color: Colors.white),
           ),
           const SizedBox(height: 20),
           const Text(
             'NeuralKB',
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
               letterSpacing: 0.3,
@@ -265,17 +441,16 @@ class _ChatScreenState extends State<ChatScreen> {
             children: suggestions.map((s) {
               return InkWell(
                 onTap: () {
-                  _messageController.text = s['label']!;
+                  _messageController.text = s['label'] as String;
                   _sendMessage();
                 },
-                borderRadius: BorderRadius.circular(14),
-                splashColor: AppTheme.accentBlue.withOpacity(0.1),
-                highlightColor: AppTheme.accentBlue.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(24),
+                splashColor: AppTheme.accentBlue.withOpacity(0.08),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: AppTheme.surface,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: AppTheme.divider),
                   ),
                   child: Row(
@@ -304,99 +479,126 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildInputBar() {
     return Container(
+      color: AppTheme.primaryDark,
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
-        top: 10,
-        bottom: MediaQuery.of(context).padding.bottom + 10,
-      ),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryDark,
-        border: Border(
-          top: BorderSide(color: AppTheme.divider.withOpacity(0.6)),
-        ),
+        top: 8,
+        bottom: MediaQuery.of(context).padding.bottom + 12,
       ),
       child: Consumer<ChatProvider>(
         builder: (context, chat, _) {
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _messageController,
-                  focusNode: _focusNode,
-                  textInputAction: TextInputAction.send,
-                  onSubmitted: (_) => _sendMessage(),
-                  maxLines: 4,
-                  minLines: 1,
-                  enabled: !chat.isThinking,
-                  style: const TextStyle(color: AppTheme.textPrimary, fontSize: 15),
-                  decoration: InputDecoration(
-                    hintText: 'Ask anything about your knowledge base...',
-                    hintStyle: TextStyle(color: AppTheme.textSecondary.withOpacity(0.45)),
-                    filled: true,
-                    fillColor: AppTheme.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(22),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(22),
-                      borderSide: BorderSide(color: AppTheme.divider.withOpacity(0.8)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(22),
-                      borderSide: const BorderSide(color: AppTheme.accentBlue, width: 1.5),
+          return Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF202124),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // + button (left)
+                Padding(
+                  padding: const EdgeInsets.only(left: 6, bottom: 6),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const UploadScreen()),
+                      );
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.add_rounded,
+                        color: AppTheme.textSecondary,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              GestureDetector(
-                onTap: chat.isThinking ? null : _sendMessage,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    gradient: chat.isThinking
-                        ? null
-                        : const LinearGradient(
-                            colors: [AppTheme.accentBlue, AppTheme.accentBlueDark],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                    color: chat.isThinking ? AppTheme.surface : null,
-                    borderRadius: BorderRadius.circular(23),
-                    boxShadow: chat.isThinking
-                        ? null
-                        : [
-                            BoxShadow(
-                              color: AppTheme.accentGlow.withOpacity(0.45),
-                              blurRadius: 14,
-                              offset: const Offset(0, 3),
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    focusNode: _focusNode,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => _sendMessage(),
+                    maxLines: 4,
+                    minLines: 1,
+                    enabled: !chat.isThinking,
+                    style: const TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 15,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Message NeuralKB',
+                      hintStyle: TextStyle(
+                        color: AppTheme.textSecondary.withOpacity(0.6),
+                      ),
+                      filled: false,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 14,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8, bottom: 6),
+                  child: GestureDetector(
+                    onTap: chat.isThinking ? null : _sendMessage,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: chat.isThinking
+                            ? AppTheme.divider
+                            : Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: chat.isThinking
+                          ? Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppTheme.accentBlue,
+                                ),
+                              ),
+                            )
+                          : const Icon(
+                              Icons.arrow_upward_rounded,
+                              color: Color(0xFF131314),
+                              size: 20,
                             ),
-                          ],
+                    ),
                   ),
-                  child: chat.isThinking
-                      ? const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentBlue),
-                          ),
-                        )
-                      : const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 22),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         },
       ),
     );
   }
 }
+
+// ── Source Modal ───────────────────────────────────────────────────────────────
 
 class _SourceModal extends StatelessWidget {
   final Source source;
@@ -407,9 +609,7 @@ class _SourceModal extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconColor = source.isImage
         ? Colors.orange
-        : source.isVideo
-            ? const Color(0xFFA855F7)
-            : AppTheme.accentBlue;
+        : AppTheme.textSecondary;
 
     return Container(
       constraints: BoxConstraints(
@@ -487,7 +687,10 @@ class _SourceModal extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close, color: AppTheme.textSecondary.withOpacity(0.7)),
+                  icon: Icon(
+                    Icons.close,
+                    color: AppTheme.textSecondary.withOpacity(0.7),
+                  ),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -500,7 +703,8 @@ class _SourceModal extends StatelessWidget {
           Flexible(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
-              child: source.isImage && (source.dataUrl != null || source.url != null)
+              child: source.isImage &&
+                      (source.dataUrl != null || source.url != null)
                   ? _buildImagePreview()
                   : source.contentPreview != null
                       ? SelectableText(
@@ -542,7 +746,6 @@ class _SourceModal extends StatelessWidget {
     final imageUrl = source.dataUrl ?? source.url;
     if (imageUrl == null) return const SizedBox.shrink();
 
-    // Base64 data URL (e.g. "data:image/jpeg;base64,...")
     if (imageUrl.startsWith('data:')) {
       try {
         final b64 = imageUrl.split(',').last;
@@ -557,12 +760,15 @@ class _SourceModal extends StatelessWidget {
         );
       } catch (_) {
         return const Center(
-          child: Icon(Icons.broken_image_outlined, size: 48, color: AppTheme.textSecondary),
+          child: Icon(
+            Icons.broken_image_outlined,
+            size: 48,
+            color: AppTheme.textSecondary,
+          ),
         );
       }
     }
 
-    // Relative path — prepend server base URL
     final resolvedUrl = imageUrl.startsWith('/')
         ? '${ApiService.baseUrl}$imageUrl'
         : imageUrl;
@@ -583,7 +789,8 @@ class _SourceModal extends StatelessWidget {
                   ? loadingProgress.cumulativeBytesLoaded /
                       loadingProgress.expectedTotalBytes!
                   : null,
-              valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accentBlue),
+              valueColor:
+                  const AlwaysStoppedAnimation<Color>(AppTheme.accentBlue),
               strokeWidth: 2,
             ),
           );

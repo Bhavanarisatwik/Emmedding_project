@@ -47,25 +47,9 @@ class MessageBubble extends StatelessWidget {
           ),
           margin: const EdgeInsets.symmetric(vertical: 4),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppTheme.userBubble, AppTheme.accentBlueDark],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(4),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.userBubble.withOpacity(0.3),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
-              ),
-            ],
+          decoration: const BoxDecoration(
+            color: AppTheme.userBubble,
+            borderRadius: BorderRadius.all(Radius.circular(24)),
           ),
           child: Text(
             message.content,
@@ -98,13 +82,9 @@ class MessageBubble extends StatelessWidget {
           Container(
             width: 32,
             height: 32,
-            decoration: BoxDecoration(
-              color: AppTheme.surface,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: AppTheme.accentBlue.withOpacity(0.3),
-                width: 1,
-              ),
+            decoration: const BoxDecoration(
+              color: Color(0x20E8EAED),
+              shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.auto_awesome,
@@ -118,31 +98,15 @@ class MessageBubble extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.72,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: AppTheme.aiBubble,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                      bottomLeft: Radius.circular(4),
-                      bottomRight: Radius.circular(20),
-                    ),
-                    border: Border.all(
-                      color: AppTheme.accentBlue.withOpacity(0.08),
-                      width: 1,
-                    ),
-                  ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
                   child: MarkdownBody(
                     data: message.content,
                     styleSheet: MarkdownStyleSheet(
                       p: const TextStyle(
-                        color: AppTheme.textPrimary,
+                        color: Colors.white,
                         fontSize: 15,
-                        height: 1.55,
+                        height: 1.6,
                       ),
                       code: TextStyle(
                         color: AppTheme.accentBlue,
@@ -172,25 +136,25 @@ class MessageBubble extends StatelessWidget {
                         decoration: TextDecoration.underline,
                       ),
                       h1: const TextStyle(
-                        color: AppTheme.textPrimary,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
                       h2: const TextStyle(
-                        color: AppTheme.textPrimary,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
                       h3: const TextStyle(
-                        color: AppTheme.textPrimary,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                       listBullet: const TextStyle(
-                        color: AppTheme.textPrimary,
+                        color: Colors.white,
                       ),
                       strong: const TextStyle(
-                        color: AppTheme.textPrimary,
+                        color: Colors.white,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

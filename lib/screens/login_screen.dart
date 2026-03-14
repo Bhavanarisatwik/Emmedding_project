@@ -229,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen>
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(50),
                       boxShadow: _isLoading
                           ? null
                           : [
@@ -246,9 +246,7 @@ class _LoginScreenState extends State<LoginScreen>
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
                         disabledBackgroundColor: AppTheme.surface,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                        shape: const StadiumBorder(),
                       ),
                       child: _isLoading
                           ? const SizedBox(
@@ -264,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen>
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                color: AppTheme.primaryDark,
                               ),
                             ),
                     ),

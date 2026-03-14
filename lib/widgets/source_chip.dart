@@ -20,15 +20,15 @@ class SourceChip extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        splashColor: chipColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        splashColor: Colors.white.withOpacity(0.05),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: chipColor.withOpacity(0.07),
-            borderRadius: BorderRadius.circular(12),
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: chipColor.withOpacity(0.25),
+              color: Colors.white.withOpacity(0.2),
               width: 1,
             ),
           ),
@@ -41,22 +41,13 @@ class SourceChip extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 110),
                 child: Text(
                   source.filename,
-                  style: TextStyle(
-                    color: chipColor,
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 5),
-              Text(
-                '${source.scorePercent}%',
-                style: TextStyle(
-                  color: chipColor.withOpacity(0.6),
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -68,8 +59,8 @@ class SourceChip extends StatelessWidget {
 
   Color _chipColor() {
     if (source.isImage) return Colors.orange;
-    if (source.isVideo) return const Color(0xFFA855F7);
-    return AppTheme.accentBlue;
+    if (source.isVideo) return AppTheme.textSecondary;
+    return AppTheme.textSecondary;
   }
 
   Widget _buildIcon(Color color) {

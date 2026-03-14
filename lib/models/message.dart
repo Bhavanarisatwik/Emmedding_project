@@ -62,6 +62,41 @@ class Message {
   }
 }
 
+class ChatSession {
+  final String id;
+  final DateTime createdAt;
+  final List<Message> messages;
+
+  ChatSession({required this.id, required this.createdAt, required this.messages});
+
+  String get preview {
+    final first = messages.firstWhere((m) => m.isUser, orElse: () => messages.first);
+    final text = first.content;
+    return text.length > 55 ? '${text.substring(0, 55)}...' : text;
+  }
+
+  factory ChatSession.fromJson(Map<String, dynamic> json) {
+    return ChatSession(
+      id: json['id']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      messages: (json['messages'] as List<dynamic>?)
+              ?.map((m) => Message.fromJson(m))
+              .toList() ??
+          [],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'createdAt': createdAt.toIso8601String(),
+      'messages': messages.map((m) => m.toJson()).toList(),
+    };
+  }
+}
+
 class Source {
   final String id;
   final double score;
