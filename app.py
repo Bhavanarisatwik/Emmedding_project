@@ -19,7 +19,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
 
-load_dotenv(override=True)
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
