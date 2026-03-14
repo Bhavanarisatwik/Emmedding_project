@@ -7,7 +7,7 @@ import 'typing_indicator.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
-  final VoidCallback? onSourceTap;
+  final Function(Source)? onSourceTap;
 
   const MessageBubble({
     super.key,
@@ -213,7 +213,7 @@ class MessageBubble extends StatelessWidget {
                     children: message.sources.take(6).map((source) {
                       return SourceChip(
                         source: source,
-                        onTap: onSourceTap,
+                        onTap: onSourceTap != null ? () => onSourceTap!(source) : null,
                       );
                     }).toList(),
                   ),

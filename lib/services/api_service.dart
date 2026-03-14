@@ -30,7 +30,7 @@ class ApiService {
         Uri.parse('$baseUrl$chatEndpoint'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'message': message, 'model': model}),
-      ).timeout(const Duration(seconds: 60));
+      ).timeout(const Duration(seconds: 120));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

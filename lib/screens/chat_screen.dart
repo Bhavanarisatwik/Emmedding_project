@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/chat_provider.dart';
+import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/typing_indicator.dart';
@@ -136,9 +138,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: MessageBubble(
                         message: message,
-                        onSourceTap: message.sources.isNotEmpty
-                            ? () => _showSourceModal(message.sources.first)
-                            : null,
+                        onSourceTap: _showSourceModal,
                       ),
                     );
                   },
@@ -489,10 +489,31 @@ class _SourceModal extends StatelessWidget {
     final imageUrl = source.dataUrl ?? source.url;
     if (imageUrl == null) return const SizedBox.shrink();
 
+    // Base64 data URL (e.g. "data:image/jpeg;base64,...")
+    if (imageUrl.startsWith('data:')) {
+      try {
+        final b64 = imageUrl.split(',').last;
+        final bytes = base64Decode(b64);
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Image.memory(bytes, fit: BoxFit.contain),
+        );
+      } catch (_) {
+        return const Center(
+          child: Icon(Icons.broken_image, size: 48, color: AppTheme.textSecondary),
+        );
+      }
+    }
+
+    // Relative path (e.g. "/media/images/foo.jpg") — prepend server base URL
+    final resolvedUrl = imageUrl.startsWith('/')
+        ? '${ApiService.baseUrl}$imageUrl'
+        : imageUrl;
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Image.network(
-        imageUrl,
+        resolvedUrl,
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) => const Center(
           child: Icon(Icons.broken_image, size: 48, color: AppTheme.textSecondary),
