@@ -36,10 +36,7 @@ class MessageBubble extends StatelessWidget {
       builder: (context, value, child) {
         return Transform.translate(
           offset: Offset(0, 10 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: child,
-          ),
+          child: Opacity(opacity: value, child: child),
         );
       },
       child: Align(
@@ -56,24 +53,24 @@ class MessageBubble extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(20),
-              topRight: const Radius.circular(20),
-              bottomLeft: const Radius.circular(20),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+              bottomLeft: Radius.circular(20),
               bottomRight: Radius.circular(4),
             ),
             boxShadow: [
               BoxShadow(
                 color: AppTheme.userBubble.withOpacity(0.3),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
           child: Text(
             message.content,
             style: const TextStyle(
-              color: AppTheme.textPrimary,
+              color: Colors.white,
               fontSize: 15,
               height: 1.4,
             ),
@@ -91,10 +88,7 @@ class MessageBubble extends StatelessWidget {
       builder: (context, value, child) {
         return Transform.translate(
           offset: Offset(0, 10 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: child,
-          ),
+          child: Opacity(opacity: value, child: child),
         );
       },
       child: Row(
@@ -126,9 +120,9 @@ class MessageBubble extends StatelessWidget {
               children: [
                 Container(
                   constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.7,
+                    maxWidth: MediaQuery.of(context).size.width * 0.72,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
                     color: AppTheme.aiBubble,
                     borderRadius: const BorderRadius.only(
@@ -137,6 +131,10 @@ class MessageBubble extends StatelessWidget {
                       bottomLeft: Radius.circular(4),
                       bottomRight: Radius.circular(20),
                     ),
+                    border: Border.all(
+                      color: AppTheme.accentBlue.withOpacity(0.08),
+                      width: 1,
+                    ),
                   ),
                   child: MarkdownBody(
                     data: message.content,
@@ -144,7 +142,7 @@ class MessageBubble extends StatelessWidget {
                       p: const TextStyle(
                         color: AppTheme.textPrimary,
                         fontSize: 15,
-                        height: 1.5,
+                        height: 1.55,
                       ),
                       code: TextStyle(
                         color: AppTheme.accentBlue,
@@ -154,7 +152,8 @@ class MessageBubble extends StatelessWidget {
                       ),
                       codeblockDecoration: BoxDecoration(
                         color: AppTheme.surfaceLight,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppTheme.divider),
                       ),
                       blockquote: const TextStyle(
                         color: AppTheme.textSecondary,
@@ -190,21 +189,35 @@ class MessageBubble extends StatelessWidget {
                       listBullet: const TextStyle(
                         color: AppTheme.textPrimary,
                       ),
+                      strong: const TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     selectable: true,
                   ),
                 ),
                 // Sources
                 if (message.sources.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sources',
-                    style: TextStyle(
-                      color: AppTheme.textSecondary.withOpacity(0.7),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1,
-                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.link_rounded,
+                        size: 12,
+                        color: AppTheme.accentBlue.withOpacity(0.7),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Sources',
+                        style: TextStyle(
+                          color: AppTheme.accentBlue.withOpacity(0.8),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 6),
                   Wrap(

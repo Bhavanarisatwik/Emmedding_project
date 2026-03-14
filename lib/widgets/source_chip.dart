@@ -14,44 +14,49 @@ class SourceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chipColor = _chipColor();
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
+        splashColor: chipColor.withOpacity(0.1),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
-            color: AppTheme.surface,
+            color: chipColor.withOpacity(0.07),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: AppTheme.divider,
+              color: chipColor.withOpacity(0.25),
               width: 1,
             ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildIcon(),
+              _buildIcon(chipColor),
               const SizedBox(width: 6),
               ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 100),
+                constraints: const BoxConstraints(maxWidth: 110),
                 child: Text(
                   source.filename,
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
+                  style: TextStyle(
+                    color: chipColor,
                     fontSize: 12,
+                    fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 5),
               Text(
                 '${source.scorePercent}%',
                 style: TextStyle(
-                  color: AppTheme.textSecondary.withOpacity(0.6),
+                  color: chipColor.withOpacity(0.6),
                   fontSize: 10,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -61,19 +66,21 @@ class SourceChip extends StatelessWidget {
     );
   }
 
-  Widget _buildIcon() {
+  Color _chipColor() {
+    if (source.isImage) return Colors.orange;
+    if (source.isVideo) return const Color(0xFFA855F7);
+    return AppTheme.accentBlue;
+  }
+
+  Widget _buildIcon(Color color) {
     IconData icon;
-    Color color;
 
     if (source.isImage) {
-      icon = Icons.image;
-      color = Colors.orange;
+      icon = Icons.image_outlined;
     } else if (source.isVideo) {
-      icon = Icons.videocam;
-      color = Colors.purple;
+      icon = Icons.videocam_outlined;
     } else {
-      icon = Icons.description;
-      color = AppTheme.accentBlue;
+      icon = Icons.description_outlined;
     }
 
     return Icon(icon, size: 14, color: color);

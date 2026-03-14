@@ -73,17 +73,26 @@ class _ChatScreenState extends State<ChatScreen> {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [AppTheme.accentBlue, AppTheme.accentBlueDark],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(9),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.accentGlow.withOpacity(0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.auto_awesome, size: 18, color: Colors.white),
+              child: const Icon(Icons.auto_awesome, size: 17, color: Colors.white),
             ),
             const SizedBox(width: 10),
             const Text(
               'NeuralKB',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.3),
             ),
           ],
         ),
@@ -119,7 +128,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Consumer<ChatProvider>(
               builder: (context, chat, _) {
                 _scrollToBottom();
-                
+
                 if (chat.messages.isEmpty && !chat.isThinking) {
                   return _buildWelcome();
                 }
@@ -130,9 +139,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: chat.messages.length + (chat.isThinking ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (index == chat.messages.length && chat.isThinking) {
-                      return const TypingIndicator();
+                      return const Padding(
+                        padding: EdgeInsets.only(bottom: 12),
+                        child: TypingIndicator(),
+                      );
                     }
-                    
+
                     final message = chat.messages[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
@@ -146,6 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
           ),
+
           // Error banner
           Consumer<ChatProvider>(
             builder: (context, chat, _) {
@@ -153,15 +166,15 @@ class _ChatScreenState extends State<ChatScreen> {
               return Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.symmetric(horizontal: 16),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppTheme.error.withOpacity(0.1),
+                  color: AppTheme.error.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.error.withOpacity(0.3)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: AppTheme.error, size: 20),
+                    const Icon(Icons.error_outline, color: AppTheme.error, size: 18),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -170,7 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, size: 18),
+                      icon: const Icon(Icons.close, size: 16),
                       color: AppTheme.error,
                       onPressed: () => chat.dismissError(),
                       padding: EdgeInsets.zero,
@@ -181,6 +194,7 @@ class _ChatScreenState extends State<ChatScreen> {
               );
             },
           ),
+
           // Input bar
           _buildInputBar(),
         ],
@@ -190,62 +204,63 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildWelcome() {
     final suggestions = <Map<String, dynamic>>[
-      {'icon': Icons.description, 'label': 'Summarize my documents'},
-      {'icon': Icons.image, 'label': 'Show my uploaded photos'},
-      {'icon': Icons.search, 'label': 'Find notes about...'},
-      {'icon': Icons.analytics, 'label': 'What did I upload today?'},
+      {'icon': Icons.description_outlined, 'label': 'Summarize my documents'},
+      {'icon': Icons.image_outlined, 'label': 'Show my uploaded photos'},
+      {'icon': Icons.search_rounded, 'label': 'Find notes about...'},
+      {'icon': Icons.analytics_outlined, 'label': 'What did I upload today?'},
     ];
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          const SizedBox(height: 60),
+          const SizedBox(height: 64),
           Container(
-            width: 80,
-            height: 80,
+            width: 76,
+            height: 76,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [AppTheme.accentBlue, AppTheme.accentBlueDark],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(22),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.accentBlue.withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+                  color: AppTheme.accentGlow.withOpacity(0.4),
+                  blurRadius: 24,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
             child: const Icon(
               Icons.auto_awesome,
-              size: 40,
+              size: 36,
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           const Text(
             'NeuralKB',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: AppTheme.textPrimary,
+              letterSpacing: 0.3,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             'Your personal AI knowledge base',
             style: TextStyle(
               fontSize: 14,
-              color: AppTheme.textSecondary.withOpacity(0.8),
+              color: AppTheme.textSecondary.withOpacity(0.7),
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 36),
           Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: 10,
+            runSpacing: 10,
             alignment: WrapAlignment.center,
             children: suggestions.map((s) {
               return InkWell(
@@ -253,23 +268,25 @@ class _ChatScreenState extends State<ChatScreen> {
                   _messageController.text = s['label']!;
                   _sendMessage();
                 },
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
+                splashColor: AppTheme.accentBlue.withOpacity(0.1),
+                highlightColor: AppTheme.accentBlue.withOpacity(0.05),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
                   decoration: BoxDecoration(
                     color: AppTheme.surface,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: AppTheme.divider),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(s['icon'] as IconData, size: 18, color: AppTheme.accentBlue),
+                      Icon(s['icon'] as IconData, size: 16, color: AppTheme.accentBlue),
                       const SizedBox(width: 8),
                       Text(
                         s['label'] as String,
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
+                        style: TextStyle(
+                          color: AppTheme.textSecondary.withOpacity(0.9),
                           fontSize: 13,
                         ),
                       ),
@@ -279,6 +296,7 @@ class _ChatScreenState extends State<ChatScreen> {
               );
             }).toList(),
           ),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -289,18 +307,19 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
-        top: 12,
-        bottom: MediaQuery.of(context).padding.bottom + 12,
+        top: 10,
+        bottom: MediaQuery.of(context).padding.bottom + 10,
       ),
       decoration: BoxDecoration(
         color: AppTheme.primaryDark,
         border: Border(
-          top: BorderSide(color: AppTheme.divider.withOpacity(0.5)),
+          top: BorderSide(color: AppTheme.divider.withOpacity(0.6)),
         ),
       ),
       child: Consumer<ChatProvider>(
         builder: (context, chat, _) {
           return Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: TextField(
@@ -311,42 +330,52 @@ class _ChatScreenState extends State<ChatScreen> {
                   maxLines: 4,
                   minLines: 1,
                   enabled: !chat.isThinking,
-                  style: const TextStyle(color: AppTheme.textPrimary),
+                  style: const TextStyle(color: AppTheme.textPrimary, fontSize: 15),
                   decoration: InputDecoration(
                     hintText: 'Ask anything about your knowledge base...',
-                    hintStyle: TextStyle(color: AppTheme.textSecondary.withOpacity(0.5)),
+                    hintStyle: TextStyle(color: AppTheme.textSecondary.withOpacity(0.45)),
                     filled: true,
                     fillColor: AppTheme.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(22),
                       borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(22),
+                      borderSide: BorderSide(color: AppTheme.divider.withOpacity(0.8)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(22),
+                      borderSide: const BorderSide(color: AppTheme.accentBlue, width: 1.5),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               GestureDetector(
                 onTap: chat.isThinking ? null : _sendMessage,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  width: 48,
-                  height: 48,
+                  width: 46,
+                  height: 46,
                   decoration: BoxDecoration(
                     gradient: chat.isThinking
                         ? null
-                        : LinearGradient(
+                        : const LinearGradient(
                             colors: [AppTheme.accentBlue, AppTheme.accentBlueDark],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
                     color: chat.isThinking ? AppTheme.surface : null,
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: BorderRadius.circular(23),
                     boxShadow: chat.isThinking
                         ? null
                         : [
                             BoxShadow(
-                              color: AppTheme.accentBlue.withOpacity(0.4),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                              color: AppTheme.accentGlow.withOpacity(0.45),
+                              blurRadius: 14,
+                              offset: const Offset(0, 3),
                             ),
                           ],
                   ),
@@ -355,10 +384,10 @@ class _ChatScreenState extends State<ChatScreen> {
                           padding: EdgeInsets.all(12),
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.textSecondary),
+                            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentBlue),
                           ),
                         )
-                      : const Icon(Icons.send, color: Colors.white, size: 22),
+                      : const Icon(Icons.arrow_upward_rounded, color: Colors.white, size: 22),
                 ),
               ),
             ],
@@ -376,13 +405,24 @@ class _SourceModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconColor = source.isImage
+        ? Colors.orange
+        : source.isVideo
+            ? const Color(0xFFA855F7)
+            : AppTheme.accentBlue;
+
     return Container(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.7,
+        maxHeight: MediaQuery.of(context).size.height * 0.75,
       ),
       decoration: const BoxDecoration(
-        color: AppTheme.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        color: AppTheme.surfaceLight,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+        border: Border(
+          top: BorderSide(color: AppTheme.divider),
+          left: BorderSide(color: AppTheme.divider),
+          right: BorderSide(color: AppTheme.divider),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -390,39 +430,34 @@ class _SourceModal extends StatelessWidget {
           // Handle
           Container(
             margin: const EdgeInsets.only(top: 12),
-            width: 40,
+            width: 36,
             height: 4,
             decoration: BoxDecoration(
               color: AppTheme.divider,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
+
           // Header
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: source.isImage
-                        ? Colors.orange.withOpacity(0.1)
-                        : source.isVideo
-                            ? Colors.purple.withOpacity(0.1)
-                            : AppTheme.accentBlue.withOpacity(0.1),
+                    color: iconColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: iconColor.withOpacity(0.2)),
                   ),
                   child: Icon(
                     source.isImage
-                        ? Icons.image
+                        ? Icons.image_outlined
                         : source.isVideo
-                            ? Icons.videocam
-                            : Icons.description,
-                    color: source.isImage
-                        ? Colors.orange
-                        : source.isVideo
-                            ? Colors.purple
-                            : AppTheme.accentBlue,
+                            ? Icons.videocam_outlined
+                            : Icons.description_outlined,
+                    color: iconColor,
+                    size: 22,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -435,48 +470,66 @@ class _SourceModal extends StatelessWidget {
                         style: const TextStyle(
                           color: AppTheme.textPrimary,
                           fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                          fontSize: 15,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 3),
                       Text(
                         '${source.type.toUpperCase()} • ${source.scorePercent}% relevance',
                         style: TextStyle(
                           color: AppTheme.textSecondary.withOpacity(0.7),
-                          fontSize: 12,
+                          fontSize: 11,
                         ),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close, color: AppTheme.textSecondary.withOpacity(0.7)),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
           ),
-          const Divider(height: 1, color: AppTheme.divider),
+
+          Divider(height: 1, color: AppTheme.divider.withOpacity(0.6)),
+
           // Content
           Flexible(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: source.isImage && (source.dataUrl != null || source.url != null)
                   ? _buildImagePreview()
                   : source.contentPreview != null
-                      ? Text(
+                      ? SelectableText(
                           source.contentPreview!,
                           style: const TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 14,
-                            height: 1.6,
+                            height: 1.65,
                           ),
                         )
-                      : const Text(
-                          'No preview available',
-                          style: TextStyle(color: AppTheme.textSecondary),
+                      : Center(
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 20),
+                              Icon(
+                                Icons.preview_outlined,
+                                size: 40,
+                                color: AppTheme.textSecondary.withOpacity(0.3),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'No preview available',
+                                style: TextStyle(
+                                  color: AppTheme.textSecondary.withOpacity(0.5),
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
             ),
           ),
@@ -495,28 +548,65 @@ class _SourceModal extends StatelessWidget {
         final b64 = imageUrl.split(',').last;
         final bytes = base64Decode(b64);
         return ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.memory(bytes, fit: BoxFit.contain),
+          borderRadius: BorderRadius.circular(14),
+          child: Image.memory(
+            bytes,
+            fit: BoxFit.contain,
+            width: double.infinity,
+          ),
         );
       } catch (_) {
         return const Center(
-          child: Icon(Icons.broken_image, size: 48, color: AppTheme.textSecondary),
+          child: Icon(Icons.broken_image_outlined, size: 48, color: AppTheme.textSecondary),
         );
       }
     }
 
-    // Relative path (e.g. "/media/images/foo.jpg") — prepend server base URL
+    // Relative path — prepend server base URL
     final resolvedUrl = imageUrl.startsWith('/')
         ? '${ApiService.baseUrl}$imageUrl'
         : imageUrl;
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: Image.network(
         resolvedUrl,
         fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const Center(
-          child: Icon(Icons.broken_image, size: 48, color: AppTheme.textSecondary),
+        width: double.infinity,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Container(
+            height: 200,
+            alignment: Alignment.center,
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+              valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accentBlue),
+              strokeWidth: 2,
+            ),
+          );
+        },
+        errorBuilder: (_, __, ___) => Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              Icon(
+                Icons.broken_image_outlined,
+                size: 48,
+                color: AppTheme.textSecondary.withOpacity(0.4),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Failed to load image',
+                style: TextStyle(
+                  color: AppTheme.textSecondary.withOpacity(0.5),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

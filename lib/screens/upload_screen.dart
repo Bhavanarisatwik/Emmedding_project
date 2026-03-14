@@ -16,7 +16,7 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   final _tagController = TextEditingController();
   final _apiService = ApiService();
-  
+
   File? _selectedFile;
   String? _selectedFileName;
   bool _isUploading = false;
@@ -25,9 +25,9 @@ class _UploadScreenState extends State<UploadScreen> {
   String? _successMessage;
 
   final List<Map<String, dynamic>> _fileTypes = [
-    {'type': 'image', 'icon': Icons.image, 'label': 'Image', 'color': Colors.orange},
-    {'type': 'video', 'icon': Icons.videocam, 'label': 'Video', 'color': Colors.purple},
-    {'type': 'document', 'icon': Icons.description, 'label': 'Document', 'color': AppTheme.accentBlue},
+    {'type': 'image', 'icon': Icons.image_outlined, 'label': 'Image', 'color': Colors.orange},
+    {'type': 'video', 'icon': Icons.videocam_outlined, 'label': 'Video', 'color': Color(0xFFA855F7)},
+    {'type': 'document', 'icon': Icons.description_outlined, 'label': 'Document', 'color': AppTheme.accentBlue},
   ];
 
   @override
@@ -39,8 +39,14 @@ class _UploadScreenState extends State<UploadScreen> {
 
   Future<void> _pickFile(String type) async {
     try {
+      // Clear previous messages when picking a new file
+      setState(() {
+        _error = null;
+        _successMessage = null;
+      });
+
       FilePickerResult? result;
-      
+
       if (type == 'image') {
         final picker = ImagePicker();
         final image = await picker.pickImage(source: ImageSource.gallery);
@@ -109,8 +115,8 @@ class _UploadScreenState extends State<UploadScreen> {
         _tagController.clear();
       });
 
-      // Clear success message after 3 seconds
-      Future.delayed(const Duration(seconds: 3), () {
+      // Clear success message after 5 seconds
+      Future.delayed(const Duration(seconds: 5), () {
         if (mounted) setState(() => _successMessage = null);
       });
     } on ApiException catch (e) {
@@ -164,7 +170,7 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
             const SizedBox(height: 32),
 
-            // File type selection
+            // File type selection (always visible)
             Row(
               children: _fileTypes.map((type) {
                 return Expanded(
@@ -182,7 +188,7 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Selected file
+            // Selected file info + tag input (only when file selected)
             if (_selectedFile != null) ...[
               Container(
                 padding: const EdgeInsets.all(16),
@@ -252,134 +258,215 @@ class _UploadScreenState extends State<UploadScreen> {
                 ),
               ),
               const SizedBox(height: 24),
+            ],
 
-              // Error message
-              if (_error != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.error.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.error.withOpacity(0.3)),
-                  ),
-                  child: Row(
+            // Error message — ALWAYS visible, outside file conditional
+            if (_error != null) ...[
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppTheme.error.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppTheme.error.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.error.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.error_outline, color: AppTheme.error, size: 18),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: AppTheme.error, fontSize: 13, height: 1.4),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => setState(() => _error = null),
+                      child: Icon(Icons.close, size: 16, color: AppTheme.error.withOpacity(0.6)),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            // Success message — ALWAYS visible, outside file conditional
+            if (_successMessage != null) ...[
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppTheme.success.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppTheme.success.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.success.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.check_circle_outline, color: AppTheme.success, size: 18),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _successMessage!,
+                        style: const TextStyle(color: AppTheme.success, fontSize: 13, height: 1.4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            // Upload progress (when uploading)
+            if (_isUploading) ...[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.error_outline, color: AppTheme.error, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          _error!,
-                          style: const TextStyle(color: AppTheme.error, fontSize: 13),
+                      Text(
+                        'Uploading...',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        '${(_uploadProgress * 100).toInt()}%',
+                        style: TextStyle(
+                          color: AppTheme.accentBlue,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // Success message
-              if (_successMessage != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.success.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.success.withOpacity(0.3)),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: _uploadProgress,
+                      backgroundColor: AppTheme.divider,
+                      valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accentBlue),
+                      minHeight: 6,
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.check_circle, color: AppTheme.success, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        _successMessage!,
-                        style: const TextStyle(color: AppTheme.success, fontSize: 13),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
 
-              // Upload progress
-              if (_isUploading) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: _uploadProgress,
-                    backgroundColor: AppTheme.surface,
-                    valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accentBlue),
-                    minHeight: 6,
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // Upload button
+            // Upload button (only when file selected)
+            if (_selectedFile != null) ...[
               SizedBox(
                 width: double.infinity,
                 height: 56,
-                child: ElevatedButton(
-                  onPressed: _isUploading ? null : _uploadFile,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accentBlue,
-                    disabledBackgroundColor: AppTheme.accentBlue.withOpacity(0.5),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: _isUploading
+                        ? null
+                        : const LinearGradient(
+                            colors: [AppTheme.accentBlue, AppTheme.accentBlueDark],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: _isUploading
+                        ? null
+                        : [
+                            BoxShadow(
+                              color: AppTheme.accentGlow.withOpacity(0.35),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                   ),
-                  child: _isUploading
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  child: ElevatedButton(
+                    onPressed: _isUploading ? null : _uploadFile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      disabledBackgroundColor: AppTheme.surface,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: _isUploading
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentBlue),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text('Uploading ${(_uploadProgress * 100).toInt()}%'),
-                          ],
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.cloud_upload),
-                            SizedBox(width: 8),
-                            Text(
-                              'Upload & Index',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                              const SizedBox(width: 12),
+                              Text(
+                                'Uploading ${(_uploadProgress * 100).toInt()}%',
+                                style: const TextStyle(color: AppTheme.textSecondary),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          )
+                        : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.cloud_upload_outlined, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text(
+                                'Upload & Index',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
                 ),
               ),
-            ] else ...[
-              // Empty state
+            ] else if (_successMessage == null) ...[
+              // Empty state (only when no file selected and no success message)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(40),
                 decoration: BoxDecoration(
                   color: AppTheme.surface,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppTheme.divider,
-                    style: BorderStyle.solid,
-                  ),
+                  border: Border.all(color: AppTheme.divider),
                 ),
                 child: Column(
                   children: [
-                    Icon(
-                      Icons.cloud_upload_outlined,
-                      size: 64,
-                      color: AppTheme.textSecondary.withOpacity(0.3),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppTheme.accentBlue.withOpacity(0.06),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.cloud_upload_outlined,
+                        size: 48,
+                        color: AppTheme.accentBlue.withOpacity(0.4),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Select a file type above',
+                      'Select a file type above to get started',
                       style: TextStyle(
                         color: AppTheme.textSecondary.withOpacity(0.7),
                         fontSize: 14,
@@ -422,10 +509,12 @@ class _FileTypeCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
+        splashColor: color.withOpacity(0.1),
+        highlightColor: color.withOpacity(0.05),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          padding: const EdgeInsets.symmetric(vertical: 22),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withOpacity(0.07),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: color.withOpacity(0.2)),
           ),

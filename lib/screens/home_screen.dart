@@ -30,36 +30,39 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppTheme.surface,
+          border: Border(
+            top: BorderSide(color: AppTheme.divider.withOpacity(0.7)),
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 16,
               offset: const Offset(0, -2),
             ),
           ],
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(
                   index: 0,
-                  icon: Icons.chat_bubble_outline,
-                  activeIcon: Icons.chat_bubble,
+                  icon: Icons.chat_bubble_outline_rounded,
+                  activeIcon: Icons.chat_bubble_rounded,
                   label: 'Chat',
                 ),
                 _buildNavItem(
                   index: 1,
                   icon: Icons.cloud_upload_outlined,
-                  activeIcon: Icons.cloud_upload,
+                  activeIcon: Icons.cloud_upload_rounded,
                   label: 'Upload',
                 ),
                 _buildNavItem(
                   index: 2,
                   icon: Icons.settings_outlined,
-                  activeIcon: Icons.settings,
+                  activeIcon: Icons.settings_rounded,
                   label: 'Settings',
                 ),
               ],
@@ -77,22 +80,23 @@ class _HomeScreenState extends State<HomeScreen> {
     required String label,
   }) {
     final isSelected = _currentIndex == index;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() => _currentIndex = index);
       },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeInOut,
         padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? 20 : 16,
-          vertical: 10,
+          horizontal: isSelected ? 18 : 14,
+          vertical: 9,
         ),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? AppTheme.accentBlue.withOpacity(0.15) 
+          color: isSelected
+              ? AppTheme.accentBlue.withOpacity(0.13)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -100,16 +104,16 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(
               isSelected ? activeIcon : icon,
               color: isSelected ? AppTheme.accentBlue : AppTheme.textSecondary,
-              size: 24,
+              size: 22,
             ),
             if (isSelected) ...[
-              const SizedBox(width: 8),
+              const SizedBox(width: 7),
               Text(
                 label,
                 style: const TextStyle(
                   color: AppTheme.accentBlue,
                   fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                  fontSize: 13,
                 ),
               ),
             ],

@@ -43,11 +43,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppTheme.surfaceLight,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
           'Sign Out',
-          style: TextStyle(color: AppTheme.textPrimary),
+          style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w600),
         ),
         content: const Text(
           'Are you sure you want to sign out?',
@@ -56,11 +56,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.error),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.error,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
             child: const Text('Sign Out'),
           ),
         ],
@@ -109,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Account',
             children: [
               _buildSettingsTile(
-                icon: Icons.logout,
+                icon: Icons.logout_rounded,
                 title: 'Sign Out',
                 subtitle: 'Log out of your account',
                 onTap: _logout,
@@ -124,13 +131,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'About',
             children: [
               _buildSettingsTile(
-                icon: Icons.info_outline,
+                icon: Icons.info_outline_rounded,
                 title: 'NeuralKB',
                 subtitle: 'Version 1.0.0',
                 onTap: () {},
               ),
               _buildSettingsTile(
-                icon: Icons.code,
+                icon: Icons.code_rounded,
                 title: 'Built with Flutter',
                 subtitle: 'Powered by Gemini Embeddings',
                 onTap: () {},
@@ -145,8 +152,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'NeuralKB may make mistakes.\nAlways verify important information.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppTheme.textSecondary.withOpacity(0.5),
+                color: AppTheme.textSecondary.withOpacity(0.4),
                 fontSize: 12,
+                height: 1.6,
               ),
             ),
           ),
@@ -160,14 +168,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          padding: const EdgeInsets.only(left: 4, bottom: 10),
           child: Text(
             title.toUpperCase(),
             style: TextStyle(
-              color: AppTheme.textSecondary.withOpacity(0.7),
+              color: AppTheme.textSecondary.withOpacity(0.6),
               fontSize: 11,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1.2,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.4,
             ),
           ),
         ),
@@ -175,6 +183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           decoration: BoxDecoration(
             color: AppTheme.surface,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.divider),
           ),
           child: Column(children: children),
         ),
@@ -189,21 +198,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: InkWell(
         onTap: () => _saveModel(model['id']!),
         borderRadius: BorderRadius.circular(16),
+        splashColor: AppTheme.accentBlue.withOpacity(0.08),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              Container(
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppTheme.accentBlue.withOpacity(0.1)
-                      : AppTheme.surfaceLight.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(10),
+                      ? AppTheme.accentBlue.withOpacity(0.12)
+                      : AppTheme.surfaceLight,
+                  borderRadius: BorderRadius.circular(11),
+                  border: isSelected
+                      ? Border.all(color: AppTheme.accentBlue.withOpacity(0.3))
+                      : null,
                 ),
                 child: Icon(
-                  Icons.auto_awesome,
+                  Icons.auto_awesome_rounded,
                   color: isSelected ? AppTheme.accentBlue : AppTheme.textSecondary,
                   size: 20,
                 ),
@@ -217,10 +231,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       model['name']!,
                       style: TextStyle(
                         color: AppTheme.textPrimary,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                         fontSize: 15,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       model['desc']!,
                       style: TextStyle(
@@ -232,10 +247,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               if (isSelected)
-                const Icon(
-                  Icons.check_circle,
-                  color: AppTheme.accentBlue,
-                  size: 22,
+                Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentBlue.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_rounded,
+                    color: AppTheme.accentBlue,
+                    size: 18,
+                  ),
                 ),
             ],
           ),
@@ -251,11 +273,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required VoidCallback onTap,
     Color? color,
   }) {
+    final tileColor = color ?? AppTheme.accentBlue;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
+        splashColor: tileColor.withOpacity(0.08),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
@@ -264,12 +288,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: (color ?? AppTheme.accentBlue).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  color: tileColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(11),
                 ),
                 child: Icon(
                   icon,
-                  color: color ?? AppTheme.accentBlue,
+                  color: tileColor,
                   size: 20,
                 ),
               ),
@@ -286,10 +310,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         fontSize: 15,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: TextStyle(
-                        color: AppTheme.textSecondary.withOpacity(0.7),
+                        color: AppTheme.textSecondary.withOpacity(0.65),
                         fontSize: 12,
                       ),
                     ),
@@ -297,8 +322,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               Icon(
-                Icons.chevron_right,
-                color: AppTheme.textSecondary.withOpacity(0.5),
+                Icons.chevron_right_rounded,
+                color: AppTheme.textSecondary.withOpacity(0.4),
+                size: 22,
               ),
             ],
           ),

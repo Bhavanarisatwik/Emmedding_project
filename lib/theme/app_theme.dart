@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Gemini-inspired colors
-  static const Color primaryDark = Color(0xFF1E1E2E);
-  static const Color surface = Color(0xFF2D2D3A);
-  static const Color surfaceLight = Color(0xFF3D3D4A);
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFFA0A0B0);
-  static const Color accentBlue = Color(0xFF00A8E8);
-  static const Color accentBlueDark = Color(0xFF0078D4);
-  static const Color success = Color(0xFF00C853);
-  static const Color error = Color(0xFFFF5252);
-  static const Color userBubble = Color(0xFF0078D4);
-  static const Color aiBubble = Color(0xFF2D2D3A);
-  static const Color divider = Color(0xFF3D3D4A);
+  // Deep violet/purple dark theme
+  static const Color primaryDark = Color(0xFF090910);
+  static const Color surface = Color(0xFF12121C);
+  static const Color surfaceLight = Color(0xFF1C1C2A);
+  static const Color textPrimary = Color(0xFFF0F0FF);
+  static const Color textSecondary = Color(0xFF8B8BA8);
+  static const Color accentBlue = Color(0xFFA78BFA); // violet-400
+  static const Color accentBlueDark = Color(0xFF7C3AED); // violet-600
+  static const Color accentGlow = Color(0xFF7C3AED);
+  static const Color userBubble = Color(0xFF6D28D9); // deep violet
+  static const Color aiBubble = Color(0xFF12121C); // same as surface
+  static const Color divider = Color(0xFF2A2A3E);
+  static const Color success = Color(0xFF34D399); // emerald
+  static const Color error = Color(0xFFF87171); // red-400
 
   static ThemeData get darkTheme {
     return ThemeData(
@@ -21,6 +22,8 @@ class AppTheme {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: primaryDark,
       primaryColor: accentBlue,
+      highlightColor: Color(0x1AA78BFA),
+      splashColor: Color(0x0FA78BFA),
       colorScheme: const ColorScheme.dark(
         primary: accentBlue,
         secondary: accentBlueDark,
@@ -36,6 +39,7 @@ class AppTheme {
         foregroundColor: textPrimary,
         elevation: 0,
         centerTitle: true,
+        surfaceTintColor: Colors.transparent,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: surface,
@@ -46,9 +50,10 @@ class AppTheme {
       ),
       cardTheme: CardTheme(
         color: surface,
-        elevation: 2,
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: divider, width: 1),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -72,7 +77,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: accentBlue,
-          foregroundColor: textPrimary,
+          foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -93,12 +98,25 @@ class AppTheme {
         thickness: 1,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: surface,
+        backgroundColor: surfaceLight,
         contentTextStyle: const TextStyle(color: textPrimary),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         behavior: SnackBarBehavior.floating,
+      ),
+      popupMenuTheme: const PopupMenuThemeData(
+        color: surfaceLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+          side: BorderSide(color: divider),
+        ),
+      ),
+      dialogTheme: const DialogTheme(
+        backgroundColor: surfaceLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
       ),
     );
   }
